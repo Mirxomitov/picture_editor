@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Picture Editor</string>
+    <string name="emoji">emoji</string>
+    <string name="open_camera">open camera</string>
+    <string name="get_from_gallery">get from gallery</string>
+</resources>
