@@ -19,13 +19,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.permissionx.guolindev.PermissionX
+import kotlinx.coroutines.launch
 import uz.gita.pictureeditor.MainActivity
 import uz.gita.pictureeditor.R
 import uz.gita.pictureeditor.databinding.ScreenTakePhotoBinding
 import uz.gita.pictureeditor.utils.logger
 import java.text.SimpleDateFormat
-
 
 class PhotoScreen : Fragment(R.layout.screen_take_photo) {
     private var _binding: ScreenTakePhotoBinding? = null
@@ -137,11 +138,15 @@ class PhotoScreen : Fragment(R.layout.screen_take_photo) {
             ContextCompat.getMainExecutor(requireContext()),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    val uri = outputFileResults.savedUri
-                    if (uri != null) {
-                        parentFragmentManager.beginTransaction()
-                            .replace(R.id.container, EditScreen::class.java, bundleOf(Pair("URI", uri.toString())))
-                            .commit()
+
+                    lifecycleScope.launch {
+                        val uri = outputFileResults.savedUri
+                        if (uri != null) {
+                            parentFragmentManager.beginTransaction()
+                                .addToBackStack(PhotoScreen::class.java.toString())
+                                .replace(R.id.container, EditScreen::class.java, bundleOf(Pair("URI", uri.toString())))
+                                .commit()
+                        }
                     }
                 }
 
@@ -150,6 +155,5 @@ class PhotoScreen : Fragment(R.layout.screen_take_photo) {
                 }
             }
         )
-
     }
 }

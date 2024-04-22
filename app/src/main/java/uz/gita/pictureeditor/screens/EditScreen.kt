@@ -43,7 +43,12 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         R.drawable.moustache,
         R.drawable.happy,
         R.drawable.nerd,
-        R.drawable.glasses
+        R.drawable.glasses,
+        R.drawable.img1,
+        R.drawable.img2,
+        R.drawable.img3,
+        R.drawable.img4,
+        R.drawable.img5,
     )
 
     private var selectedEmoji = EmojiData(emojiID, R.drawable.swimming_glasses)
@@ -64,10 +69,16 @@ class EditScreen : Fragment(R.layout.screen_edit) {
             binding.image.setImageURI(Uri.parse(uriString))
         }
 
+        binding.backIcon.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         (binding.bottomContainer[0] as ViewGroup).forEachIndexed { index, image ->
+            if (index == 0) (image as ImageView).isSelected = true
+
             (image as ImageView).setOnClickListener {
-                //clearSelectedBottomItems()
-                image.isEnabled = true
+                clearSelectedBottomItems()
+                image.isSelected = true
                 selectedEmoji = EmojiData(++emojiID, drawableList[index])
             }
         }
@@ -98,7 +109,7 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         }
     }
 
-    private fun makeGray(view : ImageView) {
+    private fun makeGray(view: ImageView) {
         val matrix = ColorMatrix()
         matrix.setSaturation(0f)
         val filter = ColorMatrixColorFilter(matrix)
@@ -133,11 +144,12 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         }
     }
 
-//    private fun clearSelectedBottomItems() {
-//        (binding.bottomContainer[0] as ViewGroup).forEach {
-//            it.isSelected = false
-//        }
-//    }
+    private fun clearSelectedBottomItems() {
+        (binding.bottomContainer[0] as ViewGroup).forEach {
+            it.isSelected = false
+            // TODO -> it.isEnabled = false
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun attachTouchEvents(viewGroup: ViewGroup) {

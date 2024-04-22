@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.openCamera.setOnClickListener {
             supportFragmentManager.beginTransaction()
-                .addToBackStack(PhotoScreen::class.java.toString())
+                .addToBackStack(MainActivity::class.java.toString())
                 .replace(R.id.container, PhotoScreen::class.java, bundleOf())
                 .commit()
         }

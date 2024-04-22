@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#41A4C6"
+    android:background="@color/bgColor"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -17,8 +17,8 @@
         android:id="@+id/appName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Image Editor"
-        android:textColor="@color/white"
+        android:text="Photo Editor"
+        android:textColor="@color/buttonColor"
         android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -45,16 +45,18 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/open_camera"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:layout_marginHorizontal="36dp"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/bg_button"
             android:text="@string/open_camera"
             android:textColor="@color/white" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/open_gallery"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginHorizontal="36dp"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_button"
             android:text="@string/get_from_gallery"
