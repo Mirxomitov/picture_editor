@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.permissionx.guolindev.PermissionX
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import uz.gita.pictureeditor.MainActivity
 import uz.gita.pictureeditor.R
@@ -58,7 +59,11 @@ class PhotoScreen : Fragment(R.layout.screen_take_photo) {
                     }
 
                     binding.photoButton.setOnClickListener {
-                        logger("photo button")
+                        lifecycleScope.launch {
+                            it.isEnabled = false
+                            delay(2000)
+                            it.isEnabled = true
+                        }
                         imageCaptureProvider?.let { takeImage2(it) }
                     }
                 }

@@ -1,6 +1,7 @@
 package uz.gita.pictureeditor.screens
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -16,8 +17,10 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.view.forEach
 import androidx.core.view.forEachIndexed
@@ -25,13 +28,14 @@ import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import uz.gita.pictureeditor.R
+import uz.gita.pictureeditor.data.Emoji
 import uz.gita.pictureeditor.data.EmojiData
 import uz.gita.pictureeditor.databinding.ScreenEditBinding
 import uz.gita.pictureeditor.utils.distance
+import uz.gita.pictureeditor.utils.showSoftKeyboard
 import java.text.SimpleDateFormat
 import kotlin.math.PI
 import kotlin.math.atan
-
 
 class EditScreen : Fragment(R.layout.screen_edit) {
 
@@ -50,11 +54,23 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         R.drawable.img4,
         R.drawable.img5,
     )
-
-    private var selectedEmoji = EmojiData(emojiID, R.drawable.swimming_glasses)
+    private var selectedEmoji: Emoji = EmojiData(emojiID, R.drawable.swimming_glasses)
     private var emojis = arrayListOf<ViewGroup>()
+    private var isGray = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AlertDialog.Builder(requireContext())
+                    .setMessage("If you go back, changes will not be saved. Do you want to exit?")
+                    .setPositiveButton("Exit") { dialog, _ ->
+                        dialog.dismiss()
+                        parentFragmentManager.popBackStack()
+                    }.show()
+            }
+        })
+
         _binding = ScreenEditBinding.inflate(layoutInflater)
         return binding.root
     }
@@ -70,7 +86,13 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         }
 
         binding.backIcon.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Diqqat!")
+                .setMessage("Ortga qaytsangiz o'zgarishlar saqlanib qolinmaydi, chiqishni xohlaysizmi ?")
+                .setPositiveButton("Chiqish") { dialog, _ ->
+                    parentFragmentManager.popBackStack()
+                    dialog.dismiss()
+                }.show()
         }
 
         (binding.bottomContainer[0] as ViewGroup).forEachIndexed { index, image ->
@@ -99,13 +121,20 @@ class EditScreen : Fragment(R.layout.screen_edit) {
             Toast.makeText(requireContext(), "Image saved to gallery successfully", Toast.LENGTH_SHORT).show()
         }
 
-        binding.emoji.setOnClickListener {
-            binding.bottomContainer.isVisible = true
+        binding.gray.setOnClickListener {
+            if (isGray) {
+                antiMakeGray(binding.image)
+                binding.gray.text = "Make gray"
+            } else {
+                makeGray(binding.image)
+                binding.gray.text = "Original"
+            }
+
+            isGray = !isGray
         }
 
-        binding.gray.setOnClickListener {
-            binding.bottomContainer.isVisible = false
-            makeGray(binding.image)
+        binding.addText.setOnClickListener {
+            addText(binding.root.x / 2, binding.root.y / 2)
         }
     }
 
@@ -116,13 +145,17 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         view.colorFilter = filter
     }
 
+    private fun antiMakeGray(view: ImageView) {
+        view.colorFilter = null
+    }
+
     private fun addEmoji(x: Float, y: Float) {
         clearSelectedState()
         val emojiContainer =
             LayoutInflater.from(requireContext())
                 .inflate(R.layout.emoji_container, binding.imgContainer, false) as ViewGroup
 
-        (emojiContainer[1] as ImageView).setImageResource(selectedEmoji.res)
+        (emojiContainer[1] as ImageView).setImageResource(selectedEmoji.res as Int)
         emojiContainer[0].isSelected = true
         emojiContainer[2].setOnClickListener {
             emojis.remove(emojiContainer)
@@ -137,10 +170,42 @@ class EditScreen : Fragment(R.layout.screen_edit) {
         attachTouchEvents(emojiContainer)
     }
 
+    private fun addText(x: Float, y: Float) {
+        clearSelectedState()
+        val emojiContainer =
+            LayoutInflater.from(requireContext())
+                .inflate(R.layout.text_container, binding.imgContainer, false) as ViewGroup
+
+        (emojiContainer[1] as EditText).setText("Text...")
+
+        emojiContainer[0].isSelected = true
+        emojiContainer[2].setOnClickListener {
+            emojis.remove(emojiContainer)
+            binding.imgContainer.removeView(emojiContainer)
+        }
+
+        emojiContainer.x = x
+        emojiContainer.y = y
+
+        val editText = (emojiContainer[1] as EditText)
+        editText.showSoftKeyboard()
+
+        binding.imgContainer.addView(emojiContainer)
+        emojis.add(emojiContainer)
+        attachTouchEvents(emojiContainer)
+    }
+
+
     private fun clearSelectedState() {
         emojis.forEach {
             it[0].isSelected = false
             it[2].isVisible = false
+        }
+
+        emojis.forEach {
+            if (it[1] is EditText) {
+                (it[1] as EditText).clearFocus()
+            }
         }
     }
 
