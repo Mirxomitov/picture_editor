@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import uz.gita.pictureeditor.databinding.ActivityMainBinding
 import uz.gita.pictureeditor.screens.EditScreen
 import uz.gita.pictureeditor.screens.PhotoScreen
+import uz.gita.pictureeditor.utils.setOnSingleClickListener
 
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
@@ -27,14 +28,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.openCamera.setOnClickListener {
+        binding.openCamera.setOnSingleClickListener {
             supportFragmentManager.beginTransaction()
                 .addToBackStack(MainActivity::class.java.toString())
                 .replace(R.id.container, PhotoScreen::class.java, bundleOf())
                 .commit()
         }
 
-        binding.openGallery.setOnClickListener {
+        binding.openGallery.setOnSingleClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
     }

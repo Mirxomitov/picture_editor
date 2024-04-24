@@ -32,6 +32,7 @@ import uz.gita.pictureeditor.data.Emoji
 import uz.gita.pictureeditor.data.EmojiData
 import uz.gita.pictureeditor.databinding.ScreenEditBinding
 import uz.gita.pictureeditor.utils.distance
+import uz.gita.pictureeditor.utils.setOnSingleClickListener
 import uz.gita.pictureeditor.utils.showSoftKeyboard
 import java.text.SimpleDateFormat
 import kotlin.math.PI
@@ -85,11 +86,10 @@ class EditScreen : Fragment(R.layout.screen_edit) {
             binding.image.setImageURI(Uri.parse(uriString))
         }
 
-        binding.backIcon.setOnClickListener {
+        binding.backIcon.setOnSingleClickListener{
             AlertDialog.Builder(requireContext())
-                .setTitle("Diqqat!")
-                .setMessage("Ortga qaytsangiz o'zgarishlar saqlanib qolinmaydi, chiqishni xohlaysizmi ?")
-                .setPositiveButton("Chiqish") { dialog, _ ->
+                .setMessage("If you go back, changes will not be saved. Do you want to exit ?")
+                .setPositiveButton("Exit") { dialog, _ ->
                     parentFragmentManager.popBackStack()
                     dialog.dismiss()
                 }.show()
